@@ -1,0 +1,1763 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Font Family -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="index.css" />
+    <title>Expense Tracker</title>
+  </head>
+  <body>
+    <div class="app_container">
+      <nav class="app_navbar">
+        <a href="#" class="brand" aria-label="Spendly Home">
+          <div class="brand__logo" aria-hidden="true">₦</div>
+          <div>
+            <div class="brand__title">
+              Spendly <span class="brand__tagline">Nigeria</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Month Selector -->
+        <div class="month-selector" aria-label="Month selection">
+          <button
+            type="button"
+            class="month-selector__btn"
+            id="btn-prev-month"
+            aria-label="Previous month"
+            data-action="prev-month"
+          >
+            <!-- prettier-ignore -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <span
+            class="month-selector__label"
+            id="current-month-display"
+            data-role="month-display"
+            >October 2024</span
+          >
+          <button
+            type="button"
+            class="month-selector__btn"
+            id="btn-next-month"
+            aria-label="Next month"
+            data-action="next-month"
+          >
+            <!-- prettier-ignore -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+
+        <!-- Header Action Controls -->
+        <div class="header-actions">
+          <!-- Theme Toggle -->
+          <button
+            type="button"
+            class="btn btn--subtle"
+            id="theme-toggle-btn"
+            aria-label="Toggle dark/light theme"
+            data-action="toggle-theme"
+            title="Toggle theme"
+          >
+            <!-- prettier-ignore -->
+            <svg id="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          </button>
+
+          <!-- Import Button -->
+          <button
+            type="button"
+            class="btn btn--subtle"
+            id="btn-open-import"
+            data-action="open-import"
+            aria-haspopup="dialog"
+          >
+            <!-- prettier-ignore -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Import
+          </button>
+
+          <!-- Export Button -->
+          <button
+            type="button"
+            class="btn btn--subtle"
+            id="btn-export-data"
+            data-action="export-json"
+          >
+            <!-- prettier-ignore -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Export
+          </button>
+        </div>
+      </nav>
+
+      <!-- ==========================================================================
+       MAIN WORKSPACE
+       ========================================================================== -->
+      <main class="app-main">
+        <!-- 1. Row of 3 Summary Cards -->
+        <section
+          class="summary-grid"
+          aria-label="Monthly overview metrics"
+          aria-live="polite"
+        >
+          <!-- Total Balance Card -->
+          <article
+            class="summary-card summary-card--balance"
+            id="summary-balance-card"
+            data-role="card-balance"
+          >
+            <div class="summary-card__header">
+              <span class="summary-card__label">Net Balance</span>
+              <span
+                class="summary-card__badge summary-card__badge--up"
+                data-role="balance-trend"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                </svg>
+                +18.4%
+              </span>
+            </div>
+            <div
+              class="summary-card__amount num"
+              id="val-total-balance"
+              data-role="total-balance"
+            >
+              ₦264,800.00
+            </div>
+            <div class="summary-card__meta">
+              <span>Remaining cash for current month</span>
+            </div>
+          </article>
+
+          <!-- Total Income Card -->
+          <article class="summary-card" data-role="card-income">
+            <div class="summary-card__header">
+              <span class="summary-card__label">Total Income</span>
+              <span
+                class="summary-card__badge summary-card__badge--up"
+                data-role="income-trend"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                </svg>
+                +5.0%
+              </span>
+            </div>
+            <div
+              class="summary-card__amount num"
+              id="val-total-income"
+              data-role="total-income"
+              style="color: var(--income)"
+            >
+              ₦450,000.00
+            </div>
+            <div class="summary-card__meta">
+              <span>vs ₦428,500.00 last month</span>
+            </div>
+          </article>
+
+          <!-- Total Expenses Card -->
+          <article class="summary-card" data-role="card-expense">
+            <div class="summary-card__header">
+              <span class="summary-card__label">Total Expenses</span>
+              <span
+                class="summary-card__badge summary-card__badge--down"
+                data-role="expense-trend"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+                </svg>
+                -8.2%
+              </span>
+            </div>
+            <div
+              class="summary-card__amount num"
+              id="val-total-expense"
+              data-role="total-expense"
+              style="color: var(--expense)"
+            >
+              ₦185,200.00
+            </div>
+            <div class="summary-card__meta">
+              <span>vs ₦201,750.00 last month</span>
+            </div>
+          </article>
+        </section>
+
+        <!-- 2. Two-Column Workspace Layout -->
+        <div class="content-grid">
+          <!-- LEFT COLUMN: Filters + Transaction List -->
+          <section class="main-column" aria-label="Transactions Log">
+            <!-- Filters & Search Toolbar -->
+            <div class="toolbar-card" id="filters-toolbar">
+              <div class="toolbar-row">
+                <!-- Search Box -->
+                <div class="search-field">
+                  <span class="search-field__icon">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.3-4.3" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    class="search-field__input"
+                    id="filter-search"
+                    data-filter="search"
+                    placeholder="Search by merchant, note, or tag..."
+                    aria-label="Search transactions"
+                  />
+                  <button
+                    type="button"
+                    class="search-field__clear"
+                    id="filter-search-clear"
+                    aria-label="Clear search"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <!-- Type Filter -->
+                <select
+                  class="filter-select"
+                  id="filter-type"
+                  data-filter="type"
+                  aria-label="Filter by type"
+                >
+                  <option value="all">All Types</option>
+                  <option value="expense">Expenses Only</option>
+                  <option value="income">Income Only</option>
+                </select>
+
+                <!-- Category Filter -->
+                <select
+                  class="filter-select"
+                  id="filter-category"
+                  data-filter="category"
+                  aria-label="Filter by category"
+                >
+                  <option value="all">All Categories</option>
+                  <option value="food">Food & Dining</option>
+                  <option value="transport">Transport</option>
+                  <option value="data">Data & Utility</option>
+                  <option value="housing">Housing & Rent</option>
+                  <option value="salary">Salary</option>
+                  <option value="freelance">Freelance</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="health">Healthcare</option>
+                </select>
+
+                <!-- Sort dropdown -->
+                <select
+                  class="filter-select"
+                  id="filter-sort"
+                  data-filter="sort"
+                  aria-label="Sort transactions"
+                >
+                  <option value="date-desc">Newest First</option>
+                  <option value="date-asc">Oldest First</option>
+                  <option value="amount-desc">Highest Amount</option>
+                  <option value="amount-asc">Lowest Amount</option>
+                </select>
+              </div>
+
+              <!-- Date Range & Active Indicators -->
+              <div
+                class="toolbar-row toolbar-row--collapsible"
+                id="collapsible-filters"
+              >
+                <div class="date-filter-group">
+                  <span>Date range:</span>
+                  <input
+                    type="date"
+                    class="date-input"
+                    id="filter-date-from"
+                    data-filter="date-from"
+                    aria-label="Date from"
+                    value="2024-10-01"
+                  />
+                  <span>to</span>
+                  <input
+                    type="date"
+                    class="date-input"
+                    id="filter-date-to"
+                    data-filter="date-to"
+                    aria-label="Date to"
+                    value="2024-10-31"
+                  />
+                </div>
+
+                <div class="active-filter-chips" id="active-filter-chips">
+                  <span class="filter-pill">October 2024</span>
+                  <span class="filter-pill">All types</span>
+                </div>
+              </div>
+
+              <!-- Summary info row -->
+              <div class="toolbar-info-row">
+                <span id="filter-results-count" data-role="results-count"
+                  >Showing 8 of 8 transactions</span
+                >
+                <button
+                  type="button"
+                  class="filter-clear-all"
+                  id="btn-clear-filters"
+                  data-action="clear-filters"
+                >
+                  Reset filters
+                </button>
+              </div>
+            </div>
+
+            <!-- Transactions Container -->
+            <div class="tx-card">
+              <div class="tx-card__header">
+                <h2 class="tx-card__title">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <line x1="8" y1="6" x2="21" y2="6" />
+                    <line x1="8" y1="12" x2="21" y2="12" />
+                    <line x1="8" y1="18" x2="21" y2="18" />
+                    <line x1="3" y1="6" x2="3.01" y2="6" />
+                    <line x1="3" y1="12" x2="3.01" y2="12" />
+                    <line x1="3" y1="18" x2="3.01" y2="18" />
+                  </svg>
+                  Transaction Activity
+                </h2>
+                <span class="num text-xs" style="color: var(--text-muted)"
+                  >Currency: NGN (₦)</span
+                >
+              </div>
+
+              <!-- The Active List (Populated with 8 Nigerian context entries) -->
+              <ul class="tx-list" id="tx-list" data-role="tx-list" role="list">
+                <!-- Item 1: Salary (Income) -->
+                <li
+                  class="tx-row"
+                  data-id="tx-101"
+                  data-type="income"
+                  data-category="salary"
+                >
+                  <div class="tx-row__icon-wrap icon-salary" aria-hidden="true">
+                    💼
+                  </div>
+                  <div class="tx-row__info">
+                    <div class="tx-row__title-wrap">
+                      <h3 class="tx-row__title">TechCorp Monthly Salary</h3>
+                      <span class="tx-row__tag">Work</span>
+                    </div>
+                    <div class="tx-row__subtitle">
+                      <span>Salary</span> • <span>Oct 25, 2024</span>
+                    </div>
+                  </div>
+                  <div class="tx-row__amount-wrap">
+                    <span class="tx-row__amount tx-row__amount--income num"
+                      >+₦350,000.00</span
+                    >
+                    <span class="text-xs" style="color: var(--text-muted)"
+                      >Direct deposit</span
+                    >
+                  </div>
+                  <div class="tx-row__actions">
+                    <button
+                      type="button"
+                      class="action-icon-btn"
+                      data-action="edit"
+                      data-id="tx-101"
+                      aria-label="Edit TechCorp Salary"
+                      title="Edit"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M12 20h9" />
+                        <path
+                          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="action-icon-btn action-icon-btn--delete"
+                      data-action="delete"
+                      data-id="tx-101"
+                      aria-label="Delete TechCorp Salary"
+                      title="Delete"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
+                  </div>
+                </li>
+
+                <!-- Item 2: Rent Contribution (Expense) -->
+                <li
+                  class="tx-row"
+                  data-id="tx-102"
+                  data-type="expense"
+                  data-category="housing"
+                >
+                  <div
+                    class="tx-row__icon-wrap icon-housing"
+                    aria-hidden="true"
+                  >
+                    🏠
+                  </div>
+                  <div class="tx-row__info">
+                    <div class="tx-row__title-wrap">
+                      <h3 class="tx-row__title">
+                        Yaba Apartment Service Charge
+                      </h3>
+                      <span class="tx-row__tag">Rent</span>
+                      <span class="tx-row__tag">Fixed</span>
+                    </div>
+                    <div class="tx-row__subtitle">
+                      <span>Housing & Rent</span> • <span>Oct 24, 2024</span>
+                    </div>
+                  </div>
+                  <div class="tx-row__amount-wrap">
+                    <span class="tx-row__amount tx-row__amount--expense num"
+                      >−₦65,000.00</span
+                    >
+                    <span class="text-xs" style="color: var(--text-muted)"
+                      >Transfer</span
+                    >
+                  </div>
+                  <div class="tx-row__actions">
+                    <button
+                      type="button"
+                      class="action-icon-btn"
+                      data-action="edit"
+                      data-id="tx-102"
+                      aria-label="Edit Service Charge"
+                      title="Edit"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M12 20h9" />
+                        <path
+                          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="action-icon-btn action-icon-btn--delete"
+                      data-action="delete"
+                      data-id="tx-102"
+                      aria-label="Delete Service Charge"
+                      title="Delete"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
+                  </div>
+                </li>
+
+                <!-- Item 3: MTN Fibre Data Bundle (Expense) -->
+                <li
+                  class="tx-row"
+                  data-id="tx-103"
+                  data-type="expense"
+                  data-category="data"
+                >
+                  <div class="tx-row__icon-wrap icon-data" aria-hidden="true">
+                    📡
+                  </div>
+                  <div class="tx-row__info">
+                    <div class="tx-row__title-wrap">
+                      <h3 class="tx-row__title">MTN Broadband 5G Renewal</h3>
+                      <span class="tx-row__tag">Internet</span>
+                      <span class="tx-row__tag">Utility</span>
+                    </div>
+                    <div class="tx-row__subtitle">
+                      <span>Data & Utility</span> • <span>Oct 22, 2024</span>
+                    </div>
+                  </div>
+                  <div class="tx-row__amount-wrap">
+                    <span class="tx-row__amount tx-row__amount--expense num"
+                      >−₦25,000.00</span
+                    >
+                    <span class="text-xs" style="color: var(--text-muted)"
+                      >Card</span
+                    >
+                  </div>
+                  <div class="tx-row__actions">
+                    <button
+                      type="button"
+                      class="action-icon-btn"
+                      data-action="edit"
+                      data-id="tx-103"
+                      aria-label="Edit MTN Renewal"
+                      title="Edit"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M12 20h9" />
+                        <path
+                          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="action-icon-btn action-icon-btn--delete"
+                      data-action="delete"
+                      data-id="tx-103"
+                      aria-label="Delete MTN Renewal"
+                      title="Delete"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
+                  </div>
+                </li>
+
+                <!-- Item 4: Freelance UI Design (Income) -->
+                <li
+                  class="tx-row"
+                  data-id="tx-104"
+                  data-type="income"
+                  data-category="freelance"
+                >
+                  <div
+                    class="tx-row__icon-wrap icon-freelance"
+                    aria-hidden="true"
+                  >
+                    🎨
+                  </div>
+                  <div class="tx-row__info">
+                    <div class="tx-row__title-wrap">
+                      <h3 class="tx-row__title">
+                        Fintech Landing Page Milestone
+                      </h3>
+                      <span class="tx-row__tag">Side-gig</span>
+                    </div>
+                    <div class="tx-row__subtitle">
+                      <span>Freelance</span> • <span>Oct 19, 2024</span>
+                    </div>
+                  </div>
+                  <div class="tx-row__amount-wrap">
+                    <span class="tx-row__amount tx-row__amount--income num"
+                      >+₦100,000.00</span
+                    >
+                    <span class="text-xs" style="color: var(--text-muted)"
+                      >Transfer</span
+                    >
+                  </div>
+                  <div class="tx-row__actions">
+                    <button
+                      type="button"
+                      class="action-icon-btn"
+                      data-action="edit"
+                      data-id="tx-104"
+                      aria-label="Edit Freelance Milestone"
+                      title="Edit"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M12 20h9" />
+                        <path
+                          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="action-icon-btn action-icon-btn--delete"
+                      data-action="delete"
+                      data-id="tx-104"
+                      aria-label="Delete Freelance Milestone"
+                      title="Delete"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
+                  </div>
+                </li>
+
+                <!-- Item 5: Groceries & Food (Expense) -->
+                <li
+                  class="tx-row"
+                  data-id="tx-105"
+                  data-type="expense"
+                  data-category="food"
+                >
+                  <div class="tx-row__icon-wrap icon-food" aria-hidden="true">
+                    🛒
+                  </div>
+                  <div class="tx-row__info">
+                    <div class="tx-row__title-wrap">
+                      <h3 class="tx-row__title">Shoprite Ikeja Groceries</h3>
+                      <span class="tx-row__tag">Foodstuff</span>
+                    </div>
+                    <div class="tx-row__subtitle">
+                      <span>Food & Dining</span> • <span>Oct 16, 2024</span>
+                    </div>
+                    <div class="tx-row__note">
+                      Monthly provisions, grains, vegetables, and pantry
+                      restocking
+                    </div>
+                  </div>
+                  <div class="tx-row__amount-wrap">
+                    <span class="tx-row__amount tx-row__amount--expense num"
+                      >−₦42,600.00</span
+                    >
+                    <span class="text-xs" style="color: var(--text-muted)"
+                      >POS Card</span
+                    >
+                  </div>
+                  <div class="tx-row__actions">
+                    <button
+                      type="button"
+                      class="action-icon-btn"
+                      data-action="edit"
+                      data-id="tx-105"
+                      aria-label="Edit Shoprite Groceries"
+                      title="Edit"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M12 20h9" />
+                        <path
+                          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="action-icon-btn action-icon-btn--delete"
+                      data-action="delete"
+                      data-id="tx-105"
+                      aria-label="Delete Shoprite Groceries"
+                      title="Delete"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
+                  </div>
+                </li>
+
+                <!-- Item 6: Transport / Bolt (Expense) -->
+                <li
+                  class="tx-row"
+                  data-id="tx-106"
+                  data-type="expense"
+                  data-category="transport"
+                >
+                  <div
+                    class="tx-row__icon-wrap icon-transport"
+                    aria-hidden="true"
+                  >
+                    🚗
+                  </div>
+                  <div class="tx-row__info">
+                    <div class="tx-row__title-wrap">
+                      <h3 class="tx-row__title">
+                        Bolt Commute to Victoria Island
+                      </h3>
+                      <span class="tx-row__tag">Transit</span>
+                    </div>
+                    <div class="tx-row__subtitle">
+                      <span>Transport</span> • <span>Oct 12, 2024</span>
+                    </div>
+                  </div>
+                  <div class="tx-row__amount-wrap">
+                    <span class="tx-row__amount tx-row__amount--expense num"
+                      >−₦18,400.00</span
+                    >
+                    <span class="text-xs" style="color: var(--text-muted)"
+                      >In-app</span
+                    >
+                  </div>
+                  <div class="tx-row__actions">
+                    <button
+                      type="button"
+                      class="action-icon-btn"
+                      data-action="edit"
+                      data-id="tx-106"
+                      aria-label="Edit Bolt Commute"
+                      title="Edit"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M12 20h9" />
+                        <path
+                          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="action-icon-btn action-icon-btn--delete"
+                      data-action="delete"
+                      data-id="tx-106"
+                      aria-label="Delete Bolt Commute"
+                      title="Delete"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
+                  </div>
+                </li>
+
+                <!-- Item 7: Airtime Recharge (Expense) -->
+                <li
+                  class="tx-row"
+                  data-id="tx-107"
+                  data-type="expense"
+                  data-category="data"
+                >
+                  <div class="tx-row__icon-wrap icon-data" aria-hidden="true">
+                    📱
+                  </div>
+                  <div class="tx-row__info">
+                    <div class="tx-row__title-wrap">
+                      <h3 class="tx-row__title">Airtel Airtime & Talk Time</h3>
+                      <span class="tx-row__tag">Airtime</span>
+                    </div>
+                    <div class="tx-row__subtitle">
+                      <span>Data & Utility</span> • <span>Oct 08, 2024</span>
+                    </div>
+                  </div>
+                  <div class="tx-row__amount-wrap">
+                    <span class="tx-row__amount tx-row__amount--expense num"
+                      >−₦5,000.00</span
+                    >
+                    <span class="text-xs" style="color: var(--text-muted)"
+                      >Bank App</span
+                    >
+                  </div>
+                  <div class="tx-row__actions">
+                    <button
+                      type="button"
+                      class="action-icon-btn"
+                      data-action="edit"
+                      data-id="tx-107"
+                      aria-label="Edit Airtel Airtime"
+                      title="Edit"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M12 20h9" />
+                        <path
+                          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="action-icon-btn action-icon-btn--delete"
+                      data-action="delete"
+                      data-id="tx-107"
+                      aria-label="Delete Airtel Airtime"
+                      title="Delete"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
+                  </div>
+                </li>
+
+                <!-- Item 8: Pharmacy/Health (Expense) -->
+                <li
+                  class="tx-row"
+                  data-id="tx-108"
+                  data-type="expense"
+                  data-category="health"
+                >
+                  <div class="tx-row__icon-wrap icon-health" aria-hidden="true">
+                    💊
+                  </div>
+                  <div class="tx-row__info">
+                    <div class="tx-row__title-wrap">
+                      <h3 class="tx-row__title">Medplus Pharmacy Vitamins</h3>
+                      <span class="tx-row__tag">Health</span>
+                    </div>
+                    <div class="tx-row__subtitle">
+                      <span>Healthcare</span> • <span>Oct 04, 2024</span>
+                    </div>
+                  </div>
+                  <div class="tx-row__amount-wrap">
+                    <span class="tx-row__amount tx-row__amount--expense num"
+                      >−₦29,200.00</span
+                    >
+                    <span class="text-xs" style="color: var(--text-muted)"
+                      >POS Card</span
+                    >
+                  </div>
+                  <div class="tx-row__actions">
+                    <button
+                      type="button"
+                      class="action-icon-btn"
+                      data-action="edit"
+                      data-id="tx-108"
+                      aria-label="Edit Medplus Vitamins"
+                      title="Edit"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M12 20h9" />
+                        <path
+                          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="action-icon-btn action-icon-btn--delete"
+                      data-action="delete"
+                      data-id="tx-108"
+                      aria-label="Delete Medplus Vitamins"
+                      title="Delete"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
+                  </div>
+                </li>
+              </ul>
+
+              <!-- Empty State (Hidden when items exist) -->
+              <div
+                class="empty-state"
+                id="empty-state-view"
+                style="display: none"
+              >
+                <div class="empty-state__icon">
+                  <svg
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <rect width="18" height="18" x="3" y="3" rx="2" />
+                    <path d="M3 9h18" />
+                    <path d="M9 21V9" />
+                  </svg>
+                </div>
+                <h3 class="empty-state__title">No transactions found</h3>
+                <p class="empty-state__description">
+                  No records matched your current search filters. Try adjusting
+                  your search term or date range.
+                </p>
+                <button
+                  type="button"
+                  class="btn btn--subtle"
+                  data-action="clear-filters"
+                >
+                  Clear All Filters
+                </button>
+              </div>
+
+              <!-- Loading Skeleton (Hidden by default, used when restoring data) -->
+              <div id="skeleton-loader-view" style="display: none">
+                <div class="skeleton-row">
+                  <div
+                    class="skeleton-box"
+                    style="width: 44px; height: 44px; border-radius: 10px"
+                  ></div>
+                  <div style="flex: 1">
+                    <div
+                      class="skeleton-box"
+                      style="width: 60%; height: 16px; margin-bottom: 6px"
+                    ></div>
+                    <div
+                      class="skeleton-box"
+                      style="width: 35%; height: 12px"
+                    ></div>
+                  </div>
+                  <div
+                    class="skeleton-box"
+                    style="width: 80px; height: 20px"
+                  ></div>
+                </div>
+                <div class="skeleton-row">
+                  <div
+                    class="skeleton-box"
+                    style="width: 44px; height: 44px; border-radius: 10px"
+                  ></div>
+                  <div style="flex: 1">
+                    <div
+                      class="skeleton-box"
+                      style="width: 45%; height: 16px; margin-bottom: 6px"
+                    ></div>
+                    <div
+                      class="skeleton-box"
+                      style="width: 25%; height: 12px"
+                    ></div>
+                  </div>
+                  <div
+                    class="skeleton-box"
+                    style="width: 90px; height: 20px"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Monthly Report Table Panel -->
+            <section class="panel" aria-label="Monthly comparison report">
+              <div class="panel__title">
+                <span>Quarterly Performance (Q3–Q4)</span>
+                <span
+                  class="text-xs"
+                  style="color: var(--text-muted); font-weight: normal"
+                  >Summary by month</span
+                >
+              </div>
+              <table
+                class="monthly-report-table"
+                aria-label="Quarterly Income vs Expense Table"
+              >
+                <thead>
+                  <tr>
+                    <th scope="col">Month</th>
+                    <th scope="col">Income</th>
+                    <th scope="col">Expenses</th>
+                    <th scope="col">Net Savings</th>
+                    <th scope="col">Ratio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>October 2024</strong></td>
+                    <td class="num" style="color: var(--income)">
+                      ₦450,000.00
+                    </td>
+                    <td class="num" style="color: var(--expense)">
+                      ₦185,200.00
+                    </td>
+                    <td class="num" style="font-weight: 600">+₦264,800.00</td>
+                    <td>
+                      <div class="mini-bar" title="71% Income vs 29% Expense">
+                        <div
+                          class="mini-bar__income"
+                          style="--inc-pct: 71%"
+                        ></div>
+                        <div
+                          class="mini-bar__expense"
+                          style="--exp-pct: 29%"
+                        ></div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>September 2024</td>
+                    <td class="num" style="color: var(--income)">
+                      ₦428,500.00
+                    </td>
+                    <td class="num" style="color: var(--expense)">
+                      ₦201,750.00
+                    </td>
+                    <td class="num" style="font-weight: 600">+₦226,750.00</td>
+                    <td>
+                      <div class="mini-bar">
+                        <div
+                          class="mini-bar__income"
+                          style="--inc-pct: 68%"
+                        ></div>
+                        <div
+                          class="mini-bar__expense"
+                          style="--exp-pct: 32%"
+                        ></div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>August 2024</td>
+                    <td class="num" style="color: var(--income)">
+                      ₦380,000.00
+                    </td>
+                    <td class="num" style="color: var(--expense)">
+                      ₦245,000.00
+                    </td>
+                    <td class="num" style="font-weight: 600">+₦135,000.00</td>
+                    <td>
+                      <div class="mini-bar">
+                        <div
+                          class="mini-bar__income"
+                          style="--inc-pct: 61%"
+                        ></div>
+                        <div
+                          class="mini-bar__expense"
+                          style="--exp-pct: 39%"
+                        ></div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+          </section>
+
+          <!-- RIGHT COLUMN: Sidebar (Add/Edit Form + Spending Breakdown) -->
+          <aside
+            class="sidebar-column"
+            aria-label="Transaction Entry and Analytics"
+          >
+            <!-- Add/Edit Transaction Form Panel -->
+            <section
+              class="panel panel--form"
+              id="panel-transaction-form"
+              aria-labelledby="tx-form-heading"
+            >
+              <span class="mobile-sheet-handle" aria-hidden="true"></span>
+              <div class="panel__title">
+                <span id="tx-form-heading" data-role="form-title"
+                  >Add Transaction</span
+                >
+                <button
+                  type="button"
+                  class="btn btn--subtle"
+                  id="btn-cancel-edit"
+                  data-action="cancel-edit"
+                  style="
+                    display: none;
+                    padding: 2px 8px;
+                    height: 26px;
+                    font-size: 11px;
+                  "
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <form id="tx-form" data-role="tx-form" novalidate>
+                <input type="hidden" id="tx-form-id" name="id" value="" />
+
+                <!-- Segmented Control: Expense vs Income -->
+                <div class="form-group">
+                  <label class="form-label">Transaction Type</label>
+                  <div
+                    class="segmented-control"
+                    role="radiogroup"
+                    aria-label="Select transaction type"
+                  >
+                    <div class="segmented-control__option">
+                      <input
+                        type="radio"
+                        name="type"
+                        id="type-expense"
+                        value="expense"
+                        class="segmented-control__input"
+                        checked
+                      />
+                      <label
+                        for="type-expense"
+                        class="segmented-control__label"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                        >
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Expense
+                      </label>
+                    </div>
+                    <div class="segmented-control__option">
+                      <input
+                        type="radio"
+                        name="type"
+                        id="type-income"
+                        value="income"
+                        class="segmented-control__input"
+                      />
+                      <label for="type-income" class="segmented-control__label">
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                        >
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Income
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Amount Field with Naira Prefix -->
+                <div class="form-group">
+                  <label for="tx-amount" class="form-label">Amount (₦)</label>
+                  <div class="input-naira-wrap">
+                    <span class="input-naira-prefix">₦</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="1"
+                      id="tx-amount"
+                      name="amount"
+                      class="form-input form-input--amount num"
+                      placeholder="0.00"
+                      required
+                      aria-describedby="tx-amount-error"
+                    />
+                  </div>
+                  <div class="form-error" id="tx-amount-error" role="alert">
+                    Please enter a valid amount greater than 0.
+                  </div>
+                </div>
+
+                <!-- Title / Merchant -->
+                <div class="form-group">
+                  <label for="tx-title" class="form-label"
+                    >Title / Merchant</label
+                  >
+                  <input
+                    type="text"
+                    id="tx-title"
+                    name="title"
+                    class="form-input"
+                    placeholder="e.g. Shoprite Groceries, Bolt, Rent"
+                    required
+                    aria-describedby="tx-title-error"
+                  />
+                  <div class="form-error" id="tx-title-error" role="alert">
+                    Title cannot be left blank.
+                  </div>
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                  <label for="tx-category" class="form-label">Category</label>
+                  <select
+                    id="tx-category"
+                    name="category"
+                    class="form-select"
+                    required
+                  >
+                    <option value="food">Food & Dining</option>
+                    <option value="transport">Transport (Bolt, Fuel)</option>
+                    <option value="data">Data, Airtime & Utility</option>
+                    <option value="housing">Housing & Rent</option>
+                    <option value="salary">Salary / Wages</option>
+                    <option value="freelance">Freelance & Gig</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="health">Healthcare & Pharmacy</option>
+                  </select>
+                </div>
+
+                <!-- Date -->
+                <div class="form-group">
+                  <label for="tx-date" class="form-label">Date</label>
+                  <input
+                    type="date"
+                    id="tx-date"
+                    name="date"
+                    class="form-input"
+                    required
+                  />
+                </div>
+
+                <!-- Interactive Tag Chip Input -->
+                <div class="form-group">
+                  <label for="tx-tag-input" class="form-label"
+                    >Tags (Type & Press Enter or Comma)</label
+                  >
+                  <div class="tags-container" id="tags-container">
+                    <span class="tag-chip"
+                      >Essential
+                      <button
+                        type="button"
+                        class="tag-chip__close"
+                        aria-label="Remove tag"
+                      >
+                        ×
+                      </button></span
+                    >
+                    <input
+                      type="text"
+                      id="tx-tag-input"
+                      class="tag-input-field"
+                      placeholder="Add tag..."
+                      aria-label="Add a tag"
+                    />
+                  </div>
+                </div>
+
+                <!-- Optional Note -->
+                <div class="form-group">
+                  <label for="tx-note" class="form-label"
+                    >Note (Optional)</label
+                  >
+                  <textarea
+                    id="tx-note"
+                    name="note"
+                    class="form-textarea"
+                    rows="2"
+                    placeholder="Add details or receipt reference..."
+                  ></textarea>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                  <button
+                    type="submit"
+                    class="btn btn--primary btn--full"
+                    id="btn-submit-tx"
+                    data-action="submit-form"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span id="btn-submit-tx-text">Save Transaction</span>
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <!-- Spending by Category Breakdown Panel -->
+            <section class="panel" aria-label="Category expenditure breakdown">
+              <div class="panel__title">
+                <span>Spending by Category</span>
+                <span
+                  class="text-xs"
+                  style="color: var(--text-muted); font-weight: normal"
+                  >October budget</span
+                >
+              </div>
+
+              <div class="category-breakdown" id="category-breakdown-list">
+                <!-- Category 1: Housing -->
+                <div class="category-bar-item" style="--pct: 35.1%">
+                  <div class="category-bar-header">
+                    <span class="category-bar-name">🏠 Housing & Rent</span>
+                    <span class="category-bar-values num"
+                      >₦65,000.00 (35.1%)</span
+                    >
+                  </div>
+                  <div class="progress-track" title="35.1% of expenses">
+                    <div class="progress-fill progress-fill--housing"></div>
+                  </div>
+                </div>
+
+                <!-- Category 2: Food & Dining -->
+                <div class="category-bar-item" style="--pct: 23%">
+                  <div class="category-bar-header">
+                    <span class="category-bar-name">🛒 Food & Dining</span>
+                    <span class="category-bar-values num"
+                      >₦42,600.00 (23.0%)</span
+                    >
+                  </div>
+                  <div class="progress-track" title="23.0% of expenses">
+                    <div class="progress-fill progress-fill--food"></div>
+                  </div>
+                </div>
+
+                <!-- Category 3: Healthcare (Warning limit close) -->
+                <div
+                  class="category-bar-item category-bar-item--warning"
+                  style="--pct: 15.8%"
+                >
+                  <div class="category-bar-header">
+                    <span class="category-bar-name">💊 Healthcare</span>
+                    <span class="category-bar-values num"
+                      >₦29,200.00 (15.8%)</span
+                    >
+                  </div>
+                  <div class="progress-track" title="15.8% of expenses">
+                    <div
+                      class="budget-limit-marker"
+                      style="--limit-pct: 80%"
+                      title="Budget limit target"
+                    ></div>
+                    <div class="progress-fill"></div>
+                  </div>
+                </div>
+
+                <!-- Category 4: Data & Utilities -->
+                <div class="category-bar-item" style="--pct: 16.2%">
+                  <div class="category-bar-header">
+                    <span class="category-bar-name">📡 Data & Utilities</span>
+                    <span class="category-bar-values num"
+                      >₦30,000.00 (16.2%)</span
+                    >
+                  </div>
+                  <div class="progress-track" title="16.2% of expenses">
+                    <div class="progress-fill progress-fill--data"></div>
+                  </div>
+                </div>
+
+                <!-- Category 5: Transport -->
+                <div class="category-bar-item" style="--pct: 9.9%">
+                  <div class="category-bar-header">
+                    <span class="category-bar-name"
+                      >🚗 Transport (Bolt/Fuel)</span
+                    >
+                    <span class="category-bar-values num"
+                      >₦18,400.00 (9.9%)</span
+                    >
+                  </div>
+                  <div class="progress-track" title="9.9% of expenses">
+                    <div class="progress-fill progress-fill--transport"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <!-- ==========================================================================
+       MODALS & DIALOGS
+       ========================================================================== -->
+
+    <!-- 1. Import Modal -->
+    <div
+      class="dialog-backdrop"
+      id="modal-import"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-import-title"
+    >
+      <div class="dialog-box">
+        <div class="dialog-header">
+          <h3 class="dialog-title" id="modal-import-title">
+            Import Transactions
+          </h3>
+          <button
+            type="button"
+            class="dialog-close"
+            data-action="close-dialog"
+            aria-label="Close dialog"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div
+          class="dropzone"
+          id="dropzone"
+          tabindex="0"
+          role="button"
+          aria-label="Drag and drop JSON backup file or click to select"
+        >
+          <div class="dropzone__icon">📁</div>
+          <div class="dropzone__title">Drag & drop your JSON backup here</div>
+          <div class="dropzone__subtitle">or click to browse from device</div>
+          <input
+            type="file"
+            id="file-import-input"
+            accept=".json,application/json"
+            style="display: none"
+          />
+        </div>
+
+        <div
+          class="form-error"
+          id="import-json-error"
+          role="alert"
+          style="margin-bottom: var(--space-4)"
+        >
+          Invalid JSON structure. Please ensure the file conforms to the Spendly
+          backup schema.
+        </div>
+
+        <div
+          style="display: flex; justify-content: flex-end; gap: var(--space-2)"
+        >
+          <button
+            type="button"
+            class="btn btn--subtle"
+            data-action="close-dialog"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn--primary"
+            id="btn-process-import"
+            data-action="confirm-import"
+          >
+            Process Import
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Delete Confirmation Modal -->
+    <div
+      class="dialog-backdrop"
+      id="modal-delete"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-delete-title"
+    >
+      <div class="dialog-box">
+        <div class="dialog-header">
+          <h3
+            class="dialog-title"
+            id="modal-delete-title"
+            style="color: var(--expense)"
+          >
+            Delete Transaction?
+          </h3>
+          <button
+            type="button"
+            class="dialog-close"
+            data-action="close-dialog"
+            aria-label="Close dialog"
+          >
+            ✕
+          </button>
+        </div>
+
+        <p
+          style="
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+            margin-bottom: var(--space-5);
+          "
+        >
+          Are you sure you want to delete this record? This action will adjust
+          your monthly totals immediately, though you can still undo it from the
+          toast notification.
+        </p>
+
+        <div
+          style="display: flex; justify-content: flex-end; gap: var(--space-2)"
+        >
+          <button
+            type="button"
+            class="btn btn--subtle"
+            data-action="close-dialog"
+          >
+            Keep It
+          </button>
+          <button
+            type="button"
+            class="btn btn--primary"
+            id="btn-confirm-delete"
+            data-action="confirm-delete"
+            style="background: var(--expense)"
+          >
+            Yes, Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Bottom Sheet Backdrop -->
+    <div
+      class="mobile-sheet-backdrop"
+      id="mobile-sheet-backdrop"
+      data-action="close-mobile-sheet"
+    ></div>
+
+    <!-- Mobile Floating Action Button (FAB) -->
+    <button
+      type="button"
+      class="fab-add"
+      id="mobile-fab-add"
+      data-action="open-mobile-add"
+      aria-label="Add transaction"
+    >
+      +
+    </button>
+
+    <!-- Toast Notification Stack Region -->
+    <div
+      class="toast-container"
+      id="toast-container"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <!-- ==========================================================================
+       HTML TEMPLATES (Ready for JS instantiation)
+       ========================================================================== -->
+    <!-- Template for Transaction Row -->
+    <template id="tx-row-template">
+      <li
+        class="tx-row tx-row--entering"
+        data-id=""
+        data-type=""
+        data-category=""
+      >
+        <div class="tx-row__icon-wrap" aria-hidden="true"></div>
+        <div class="tx-row__info">
+          <div class="tx-row__title-wrap">
+            <h3 class="tx-row__title"></h3>
+            <div class="tx-row__tags-host"></div>
+          </div>
+          <div class="tx-row__subtitle">
+            <span class="tx-row__category-text"></span> •
+            <span class="tx-row__date-text"></span>
+          </div>
+          <div class="tx-row__note" style="display: none"></div>
+        </div>
+        <div class="tx-row__amount-wrap">
+          <span class="tx-row__amount num"></span>
+          <span
+            class="tx-row__method text-xs"
+            style="color: var(--text-muted)"
+          ></span>
+        </div>
+        <div class="tx-row__actions">
+          <button
+            type="button"
+            class="action-icon-btn"
+            data-action="edit"
+            aria-label="Edit transaction"
+            title="Edit"
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="action-icon-btn action-icon-btn--delete"
+            data-action="delete"
+            aria-label="Delete transaction"
+            title="Delete"
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+              <line x1="10" y1="11" x2="10" y2="17" />
+              <line x1="14" y1="11" x2="14" y2="17" />
+            </svg>
+          </button>
+        </div>
+      </li>
+    </template>
+
+    <!-- Template for Toast Notification -->
+    <template id="toast-template">
+      <div class="toast" role="status">
+        <div class="toast__msg"></div>
+        <button type="button" class="toast__action" style="display: none">
+          Undo
+        </button>
+        <button
+          type="button"
+          class="dialog-close"
+          data-action="dismiss-toast"
+          style="width: 20px; height: 20px"
+          aria-label="Dismiss"
+        >
+          ✕
+        </button>
+      </div>
+    </template>
+
+    <!-- ==========================================================================
+       JAVASCRIPT: Pure UI Interactions & Event Hooks
+       ========================================================================== -->
+
+    <script src="index.js"></script>
+  </body>
+</html>
